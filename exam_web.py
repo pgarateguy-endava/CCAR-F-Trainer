@@ -5,15 +5,16 @@ from pathlib import Path
 import streamlit as st
 
 # Configuración de página
-st.set_page_config(page_title="PCAP Quiz Pro", page_icon="🧠", layout="centered")
+st.set_page_config(page_title="Claude Certification Mock", page_icon="🧠", layout="centered")
 
 st.markdown(
     """
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        /* El color de fondo y de texto lo define el tema (.streamlit/config.toml).
+           No forzar background acá: en iOS con modo oscuro dejaba texto blanco sobre fondo claro. */
         html, body, [class*="stApp"] {
             font-family: 'Inter', sans-serif;
-            background: #f5f7fb;
         }
         .stApp {
             max-width: 1200px;
@@ -32,9 +33,6 @@ st.markdown(
         h3 {
             font-size: 1.5rem !important;
             line-height: 1.4 !important;
-        }
-        .stSidebar {
-            background: #eef2f8;
         }
         .stButton > button {
             border-radius: 12px;
@@ -57,6 +55,23 @@ st.markdown(
         }
         .stCheckbox {
             padding: 0.15rem 0;
+        }
+        /* Ajustes para celular */
+        @media (max-width: 640px) {
+            .block-container {
+                padding-top: 1rem;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            h1 {
+                font-size: 1.9rem !important;
+            }
+            h3 {
+                font-size: 1.15rem !important;
+            }
+            .stButton > button {
+                width: 100%;
+            }
         }
     </style>
     """,
@@ -100,7 +115,6 @@ for k, v in defaults.items():
 
 # --- 3. Sidebar ---
 DEFAULT_JSON_FILE = "questions.json"
-FALLBACK_JSON_FILE = "questions_ccarf.json"
 
 
 def resolve_json_path(candidate: str) -> str:
@@ -108,8 +122,6 @@ def resolve_json_path(candidate: str) -> str:
         return candidate
     if Path(DEFAULT_JSON_FILE).exists():
         return DEFAULT_JSON_FILE
-    if Path(FALLBACK_JSON_FILE).exists():
-        return FALLBACK_JSON_FILE
     return candidate or DEFAULT_JSON_FILE
 
 
@@ -156,7 +168,6 @@ def start_quiz():
     st.rerun()
 
 def escape_markdown(text: str) -> str:
-    # Escapa '_' para que no se interprete como negrita
     # Escapa '_' fuera de `código` para que no se interprete como cursiva
     parts = text.split("`")
     return "`".join(p if i % 2 else p.replace("_", r"\_") for i, p in enumerate(parts))
@@ -248,8 +259,8 @@ def render_results():
         st.rerun()
 
 # --- 6. Interfaz Principal ---
-st.title("Certificación PCAP Python 🐍")
-st.caption("Prepará tus conceptos y avanzá una pregunta a la vez.")
+st.title("Simulacro Certificación Claude 🧠")
+st.caption("Mock de práctica para la certificación de Anthropic. Avanzá una pregunta a la vez.")
 
 if not ss.started:
     st.info(f"Carga tu archivo de preguntas y presiona comenzar. Ruta actual sugerida: `{resolve_json_path(json_path)}`")
@@ -272,18 +283,12 @@ else:
         # Mostrar pregunta
         st.markdown(f"### {q['question']}")
         if "code" in q:  # Soporte opcional para bloques de código
-            st.code(q["code"], language="python")
+            st.code(q["code"], language=q.get("code_language", "text"))
 
-        # Función auxiliar para detectar si una opción es código
+        # Una opción se muestra como bloque de código solo si tiene varias líneas
+        # (ej. un comando o un fragmento de configuración).
         def is_code_option(opt):
-            # Solo es código si tiene varias líneas o EMPIEZA con una palabra clave de Python.
-            # (Antes bastaba con que contuviera "if " o "for ", y el texto en inglés se mostraba como código.)
-            code_starts = (
-                'try:', 'except', 'def ', 'class ', 'print(', 'return ',
-                'if ', 'else:', 'for ', 'while ', 'import ', 'from ', 'lambda'
-            )
-            s = opt.strip()
-            return "\n" in s or s.startswith(code_starts)
+            return "\n" in opt.strip()
 
         # Lógica de Selección
         is_multi = len(q["answer_index"]) > 1
@@ -311,7 +316,7 @@ else:
                         ):
                             user_choices.append(idx)
                     with col2:
-                        st.code(opt, language="python")
+                        st.code(opt, language="text")
                 else:
                     label = escape_markdown(opt)
                     if st.checkbox(
@@ -346,7 +351,7 @@ else:
                     else:
                         st.markdown(f"**⚪ Opción {idx + 1}**")
                     
-                    st.code(opt, language="python")
+                    st.code(opt, language="text")
                     st.markdown("---")
                 
                 if selected_option is not None:

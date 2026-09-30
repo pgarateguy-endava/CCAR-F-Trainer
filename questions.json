@@ -1318,6 +1318,7 @@
   {
     "id": 95,
     "question": "Your pipeline runs the command shown below. The reviews complete and return feedback, but Claude only comments on the piped diff text — it never reads surrounding files in the checked-out repository to understand broader context, even when the diff modifies a function called by many other modules. Which change to the invocation will cause Claude to read related files in the repository while still applying your custom review instructions?",
+    "code_language": "bash",
     "code": "PROMPT=\"You are a code reviewer.\"\nPROMPT=\"$PROMPT Analyze the provided diff\"\nPROMPT=\"$PROMPT for bugs, security issues,\"\nPROMPT=\"$PROMPT and style violations.\"\nclaude -p \\\n  --dangerously-skip-permissions \\\n  --system-prompt \"$PROMPT\" \\\n  < diff.txt",
     "options": [
       "Keep `--system-prompt` and add `--allowedTools \"Read,Glob,Grep\"` so that the non-interactive `-p` mode permits file system tools that it otherwise disables.",
