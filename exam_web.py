@@ -7,6 +7,62 @@ import streamlit as st
 # Configuración de página
 st.set_page_config(page_title="PCAP Quiz Pro", page_icon="🧠", layout="centered")
 
+st.markdown(
+    """
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        html, body, [class*="stApp"] {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fb;
+        }
+        .stApp {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .block-container {
+            padding-top: 2rem;
+            padding-bottom: 3rem;
+        }
+        h1 {
+            font-size: 3rem !important;
+            line-height: 1.15 !important;
+            letter-spacing: -0.04em;
+            margin-bottom: 0.5rem !important;
+        }
+        h3 {
+            font-size: 1.5rem !important;
+            line-height: 1.4 !important;
+        }
+        .stSidebar {
+            background: #eef2f8;
+        }
+        .stButton > button {
+            border-radius: 12px;
+            border: 1px solid rgba(49, 51, 63, 0.15);
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+        .stButton > button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        .stSuccess, .stError, .stWarning, .stInfo {
+            border-radius: 12px;
+        }
+        .stProgress > div > div {
+            background: linear-gradient(90deg, #6b8cff, #7d5cf4);
+        }
+        .stRadio > div {
+            gap: 0.5rem;
+        }
+        .stCheckbox {
+            padding: 0.15rem 0;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 # --- 1. Carga de Datos con Caché ---
 @st.cache_data
 def load_questions(path_str: str):
@@ -43,8 +99,22 @@ for k, v in defaults.items():
     ss.setdefault(k, v)
 
 # --- 3. Sidebar ---
+DEFAULT_JSON_FILE = "questions.json"
+FALLBACK_JSON_FILE = "questions_ccarf.json"
+
+
+def resolve_json_path(candidate: str) -> str:
+    if candidate and Path(candidate).exists():
+        return candidate
+    if Path(DEFAULT_JSON_FILE).exists():
+        return DEFAULT_JSON_FILE
+    if Path(FALLBACK_JSON_FILE).exists():
+        return FALLBACK_JSON_FILE
+    return candidate or DEFAULT_JSON_FILE
+
+
 st.sidebar.header("⚙️ Configuración")
-json_path = st.sidebar.text_input("Ruta del JSON", "questions.json")
+json_path = st.sidebar.text_input("Ruta del JSON", DEFAULT_JSON_FILE)
 limit = st.sidebar.number_input("Límite de preguntas (0 = todas)", min_value=0, value=0, step=1)
 shuffle_qs = st.sidebar.checkbox("🔀 Orden Aleatorio", value=False)
 immediate_feedback = st.sidebar.checkbox("👀 Feedback Inmediato", value=True, help="Muestra la respuesta correcta justo después de contestar.")
@@ -56,9 +126,10 @@ if st.sidebar.button("🔄 Reiniciar Quiz", type="primary"):
 
 # --- 4. Funciones Lógicas ---
 def start_quiz():
-    qs = load_questions(json_path)
+    resolved_path = resolve_json_path(json_path)
+    qs = load_questions(resolved_path)
     if qs is None:
-        st.error(f"No se encontró el archivo: {json_path}")
+        st.error(f"No se encontró el archivo: {resolved_path}")
         return
 
     # Copia para no mutar el caché
@@ -177,10 +248,11 @@ def render_results():
         st.rerun()
 
 # --- 6. Interfaz Principal ---
-st.title("Certificación PCAP Python 🐍 ")
+st.title("Certificación PCAP Python 🐍")
+st.caption("Prepará tus conceptos y avanzá una pregunta a la vez.")
 
 if not ss.started:
-    st.info("Carga tu `questions.json` y presiona Start.")
+    st.info(f"Carga tu archivo de preguntas y presiona comenzar. Ruta actual sugerida: `{resolve_json_path(json_path)}`")
     if st.button("▶️ COMENZAR", type="primary"):
         start_quiz()
 
