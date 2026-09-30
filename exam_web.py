@@ -3,6 +3,8 @@ import time
 import random
 from pathlib import Path
 import streamlit as st
+import streamlit.components.v1 as components
+from streamlit_js_eval import streamlit_js_eval
 
 # Configuración de página
 st.set_page_config(page_title="Claude Certification Mock", page_icon="🧠", layout="centered")
@@ -134,6 +136,7 @@ immediate_feedback = st.sidebar.checkbox("👀 Feedback Inmediato", value=True, 
 if st.sidebar.button("🔄 Reiniciar Quiz", type="primary"):
     for k in defaults.keys():
         del ss[k]
+    ss["_clear_ls"] = ss["_resume_dismissed"] = True
     st.rerun()
 
 # --- 4. Funciones Lógicas ---
@@ -145,7 +148,7 @@ def start_quiz():
         return
 
     # Copia para no mutar el caché
-    qs = [q.copy() for q in qs] 
+    qs = [dict(q, _src=i) for i, q in enumerate(qs)]  # _src: posición original, para guardar el progreso en la URL 
     
     if shuffle_qs:
         random.shuffle(qs)
@@ -256,13 +259,131 @@ def render_results():
     if st.button("Volver al Inicio"):
         for k in defaults.keys():
             del ss[k]
+        ss["_clear_ls"] = ss["_resume_dismissed"] = True
         st.rerun()
+
+# --- 5b. Progreso guardado en la URL ---
+# st.session_state vive en el servidor y se pierde si Safari suspende la pestaña,
+# si se recarga la página o si la app se reinicia. Por eso guardamos el progreso
+# en la URL (?o=orden&i=índice&a=respuestas&t=inicio) y lo restauramos al volver.
+def encode_answers() -> str:
+    return ".".join(
+        "s" if ans["chosen"] is None else "+".join(map(str, ans["chosen"]))
+        for ans in ss.answers
+    )
+
+
+def restore_from_url(qp=None):
+    """Restaura el progreso desde la URL o desde un dict (el avance guardado en el navegador)."""
+    qp = st.query_params if qp is None else qp
+    if ss.started or "o" not in qp:
+        return False
+    try:
+        data = load_questions(resolve_json_path(json_path))
+        order = [dict(data[int(x)], _src=int(x)) for x in qp["o"].split(".")]
+        index = int(qp.get("i", 0))
+        answers, score = [], 0
+        for pos, raw in enumerate(filter(None, qp.get("a", "").split("."))):
+            q = order[pos]
+            chosen = None if raw == "s" else [int(c) for c in raw.split("+")]
+            if chosen is not None and any(c >= len(q["options"]) for c in chosen):
+                raise ValueError("opción fuera de rango")
+            correct = chosen is not None and set(chosen) == set(q["answer_index"])
+            score += correct
+            answers.append({
+                "question": q["question"],
+                "chosen": chosen,
+                "correct": correct,
+                "correct_index": q["answer_index"],
+                "options": q["options"],
+                "explanation": q.get("explanation", ""),
+            })
+        if not order or not 0 <= index <= len(order) or len(answers) > len(order):
+            raise ValueError("progreso inválido")
+    except (ValueError, IndexError, KeyError, TypeError):
+        st.query_params.clear()  # URL vieja o incompatible: empezamos de cero
+        return False
+
+    ss.order = order
+    ss.started = True
+    ss.index = index
+    ss.answers = answers
+    ss.score = score
+    ss.t0 = float(qp.get("t", time.time()))
+    ss.current_q_answered = index < len(answers)
+    ss.user_selection = answers[index]["chosen"] if index < len(answers) else None
+    return True
+
+
+LS_KEY = "ccarf_progress"  # clave del avance en localStorage
+
+
+def ls_write(js: str):
+    """Ejecuta JS en el navegador sin provocar un rerun (solo escritura)."""
+    components.html(f"<script>try {{ {js} }} catch (e) {{}}</script>", height=0)
+
+
+def sync_url():
+    if ss.started:
+        params = {
+            "o": ".".join(str(q["_src"]) for q in ss.order),
+            "i": str(ss.index),
+            "a": encode_answers(),
+            "t": str(int(ss.t0 or time.time())),
+        }
+        if st.query_params.to_dict() != params:
+            st.query_params.from_dict(params)
+        # Copia en la memoria del navegador, para reanudar aunque se pierda la URL
+        ls_write(f"localStorage.setItem({json.dumps(LS_KEY)}, {json.dumps(json.dumps(params))});")
+    else:
+        if st.query_params:
+            st.query_params.clear()
+        if ss.pop("_clear_ls", False):
+            ls_write(f"localStorage.removeItem({json.dumps(LS_KEY)});")
+
+
+def render_resume_prompt():
+    """Si hay un avance guardado en este navegador, ofrece reanudarlo."""
+    if ss.get("_resume_dismissed"):
+        return
+    # Devuelve None mientras el navegador todavía no respondió, "" si no hay nada guardado
+    raw = streamlit_js_eval(
+        js_expressions=f"localStorage.getItem({json.dumps(LS_KEY)}) || ''",
+        key="ls_read",
+    )
+    if not raw:
+        return
+    try:
+        saved = json.loads(raw)
+        total = len(saved["o"].split("."))
+        answered = len([a for a in saved.get("a", "").split(".") if a])
+        current = min(int(saved.get("i", 0)) + 1, total)
+    except (ValueError, KeyError, TypeError, AttributeError):
+        ls_write(f"localStorage.removeItem({json.dumps(LS_KEY)});")
+        return
+
+    with st.container(border=True):
+        st.markdown(f"**💾 Tenés un avance guardado**  \nPregunta {current} de {total} · {answered} respondidas")
+        c1, c2 = st.columns(2)
+        with c1:
+            if st.button("▶️ Reanudar", type="primary", use_container_width=True):
+                if restore_from_url(saved):
+                    st.rerun()
+                st.warning("No se pudo recuperar el avance guardado.")
+        with c2:
+            if st.button("🗑️ Empezar de nuevo", use_container_width=True):
+                ss["_clear_ls"] = ss["_resume_dismissed"] = True
+                st.rerun()
+
+
+restore_from_url()
 
 # --- 6. Interfaz Principal ---
 st.title("Simulacro Certificación Claude 🧠")
 st.caption("Mock de práctica para la certificación de Anthropic. Avanzá una pregunta a la vez.")
 
 if not ss.started:
+    render_resume_prompt()
     st.info(f"Carga tu archivo de preguntas y presiona comenzar. Ruta actual sugerida: `{resolve_json_path(json_path)}`")
     if st.button("▶️ COMENZAR", type="primary"):
         start_quiz()
@@ -417,3 +538,5 @@ else:
                 if st.button("Siguiente Pregunta ➡️", type="primary"):
                     next_question()
 
+# Guardar el progreso en la URL al final de cada ejecución
+sync_url()
