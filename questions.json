@@ -1,6 +1,7 @@
 [
   {
     "id": 1,
+    "test": 1,
     "scenario": "Customer support agent",
     "domain": "Context management and reliability",
     "topic": "Conversation history (stateless API)",
@@ -18,6 +19,7 @@
   },
   {
     "id": 2,
+    "test": 2,
     "scenario": "Customer support agent",
     "domain": "Context management and reliability",
     "topic": "Criteria for escalating to a human",
@@ -35,6 +37,7 @@
   },
   {
     "id": 3,
+    "test": 1,
     "scenario": "Customer support agent",
     "domain": "Agentic architecture and orchestration",
     "topic": "Agentic loop: the model decides on each tool_result",
@@ -52,6 +55,7 @@
   },
   {
     "id": 4,
+    "test": 2,
     "scenario": "Customer support agent",
     "domain": "Tool design and MCP integration",
     "topic": "Tool errors with isError",
@@ -69,6 +73,7 @@
   },
   {
     "id": 5,
+    "test": 1,
     "scenario": "Customer support agent",
     "domain": "Context management and reliability",
     "topic": "Escalating without investigating first",
@@ -86,6 +91,7 @@
   },
   {
     "id": 6,
+    "test": 2,
     "scenario": "Customer support agent",
     "domain": "Context management and reliability",
     "topic": "Trimming tool results in context",
@@ -103,6 +109,7 @@
   },
   {
     "id": 7,
+    "test": 1,
     "scenario": "Customer support agent",
     "domain": "Context management and reliability",
     "topic": "Customer asks for a human on a solvable case",
@@ -120,6 +127,7 @@
   },
   {
     "id": 8,
+    "test": 2,
     "scenario": "Customer support agent",
     "domain": "Context management and reliability",
     "topic": "Honesty about tool failures",
@@ -137,6 +145,7 @@
   },
   {
     "id": 9,
+    "test": 2,
     "scenario": "Customer support agent",
     "domain": "Agentic architecture and orchestration",
     "topic": "Structured mid-process handoff",
@@ -154,6 +163,7 @@
   },
   {
     "id": 10,
+    "test": 1,
     "scenario": "Customer support agent",
     "domain": "Agentic architecture and orchestration",
     "topic": "Self-contained handoff to a human",
@@ -171,6 +181,7 @@
   },
   {
     "id": 11,
+    "test": 1,
     "scenario": "Customer support agent",
     "domain": "Tool design and MCP integration",
     "topic": "Transient vs business errors (retriable)",
@@ -188,6 +199,7 @@
   },
   {
     "id": 12,
+    "test": 2,
     "scenario": "Customer support agent",
     "domain": "Context management and reliability",
     "topic": "Key facts persisted outside the history",
@@ -205,6 +217,7 @@
   },
   {
     "id": 13,
+    "test": 1,
     "scenario": "Customer support agent",
     "domain": "Tool design and MCP integration",
     "topic": "Error contract (category, retryable, cause)",
@@ -222,6 +235,7 @@
   },
   {
     "id": 14,
+    "test": 2,
     "scenario": "Customer support agent",
     "domain": "Context management and reliability",
     "topic": "Stale results in resumed sessions",
@@ -239,6 +253,7 @@
   },
   {
     "id": 15,
+    "test": 2,
     "scenario": "Customer support agent",
     "domain": "Agentic architecture and orchestration",
     "topic": "Hooks for mandatory rules (PreToolUse)",
@@ -256,6 +271,7 @@
   },
   {
     "id": 16,
+    "test": 1,
     "scenario": "Customer support agent",
     "domain": "Agentic architecture and orchestration",
     "topic": "stop_reason and the agentic loop",
@@ -273,6 +289,7 @@
   },
   {
     "id": 17,
+    "test": 2,
     "scenario": "Customer support agent",
     "domain": "Tool design and MCP integration",
     "topic": "Tool descriptions and made-up parameters",
@@ -290,6 +307,7 @@
   },
   {
     "id": 18,
+    "test": 1,
     "scenario": "Customer support agent",
     "domain": "Tool design and MCP integration",
     "topic": "Instructive error messages",
@@ -307,6 +325,7 @@
   },
   {
     "id": 19,
+    "test": 2,
     "scenario": "Customer support agent",
     "domain": "Tool design and MCP integration",
     "topic": "Overlapping tools",
@@ -324,6 +343,7 @@
   },
   {
     "id": 20,
+    "test": 1,
     "scenario": "Customer support agent",
     "domain": "Agentic architecture and orchestration",
     "topic": "Guaranteed termination in code (max_turns)",
@@ -341,6 +361,7 @@
   },
   {
     "id": 21,
+    "test": 2,
     "scenario": "Multi-agent research system",
     "domain": "Agentic architecture and orchestration",
     "topic": "Coordinator and subagents (hub-and-spoke)",
@@ -358,6 +379,7 @@
   },
   {
     "id": 22,
+    "test": 1,
     "scenario": "Multi-agent research system",
     "domain": "Agentic architecture and orchestration",
     "topic": "Subagents don't inherit context",
@@ -375,6 +397,7 @@
   },
   {
     "id": 23,
+    "test": 2,
     "scenario": "Multi-agent research system",
     "domain": "Agentic architecture and orchestration",
     "topic": "Coordinator picks subagents per query",
@@ -392,6 +415,7 @@
   },
   {
     "id": 24,
+    "test": 1,
     "scenario": "Multi-agent research system",
     "domain": "Agentic architecture and orchestration",
     "topic": "Passing context in the subagent prompt",
@@ -409,6 +433,7 @@
   },
   {
     "id": 25,
+    "test": 2,
     "scenario": "Multi-agent research system",
     "domain": "Agentic architecture and orchestration",
     "topic": "Evaluate-and-refine loop",
@@ -426,6 +451,7 @@
   },
   {
     "id": 26,
+    "test": 1,
     "scenario": "Multi-agent research system",
     "domain": "Context management and reliability",
     "topic": "Source provenance in handoffs",
@@ -443,6 +469,7 @@
   },
   {
     "id": 27,
+    "test": 1,
     "scenario": "Multi-agent research system",
     "domain": "Tool design and MCP integration",
     "topic": "Minimal tools per agent",
@@ -460,6 +487,7 @@
   },
   {
     "id": 28,
+    "test": 2,
     "scenario": "Multi-agent research system",
     "domain": "Agentic architecture and orchestration",
     "topic": "Parallel subagents (multiple Task calls)",
@@ -477,6 +505,7 @@
   },
   {
     "id": 29,
+    "test": 2,
     "scenario": "Multi-agent research system",
     "domain": "Tool design and MCP integration",
     "topic": "Specific tools vs one generic tool",
@@ -494,6 +523,7 @@
   },
   {
     "id": 30,
+    "test": 1,
     "scenario": "Multi-agent research system",
     "domain": "Context management and reliability",
     "topic": "Citations as structured data",
@@ -511,6 +541,7 @@
   },
   {
     "id": 31,
+    "test": 1,
     "scenario": "Multi-agent research system",
     "domain": "Agentic architecture and orchestration",
     "topic": "Iterative loop for information gaps",
@@ -528,6 +559,7 @@
   },
   {
     "id": 32,
+    "test": 2,
     "scenario": "Multi-agent research system",
     "domain": "Context management and reliability",
     "topic": "Recovery after a crash (exported state)",
@@ -545,6 +577,7 @@
   },
   {
     "id": 33,
+    "test": 2,
     "scenario": "Multi-agent research system",
     "domain": "Agentic architecture and orchestration",
     "topic": "Parallel fan-out from the coordinator",
@@ -562,6 +595,7 @@
   },
   {
     "id": 34,
+    "test": 1,
     "scenario": "Multi-agent research system",
     "domain": "Agentic architecture and orchestration",
     "topic": "Delegate goals, not rigid steps",
@@ -579,6 +613,7 @@
   },
   {
     "id": 35,
+    "test": 1,
     "scenario": "Multi-agent research system",
     "domain": "Prompt engineering and structured output",
     "topic": "Format by content type",
@@ -596,6 +631,7 @@
   },
   {
     "id": 36,
+    "test": 2,
     "scenario": "Multi-agent research system",
     "domain": "Agentic architecture and orchestration",
     "topic": "Task in the coordinator's allowedTools",
@@ -613,6 +649,7 @@
   },
   {
     "id": 37,
+    "test": 1,
     "scenario": "Multi-agent research system",
     "domain": "Context management and reliability",
     "topic": "What context to pass between agents",
@@ -630,6 +667,7 @@
   },
   {
     "id": 38,
+    "test": 2,
     "scenario": "Multi-agent research system",
     "domain": "Context management and reliability",
     "topic": "Temporal metadata in the data",
@@ -647,6 +685,7 @@
   },
   {
     "id": 39,
+    "test": 1,
     "scenario": "Multi-agent research system",
     "domain": "Agentic architecture and orchestration",
     "topic": "When not to delegate to a subagent",
@@ -664,6 +703,7 @@
   },
   {
     "id": 40,
+    "test": 2,
     "scenario": "Multi-agent research system",
     "domain": "Context management and reliability",
     "topic": "Uncertainty and conflicting findings",
@@ -681,6 +721,7 @@
   },
   {
     "id": 41,
+    "test": 1,
     "scenario": "Code generation with Claude Code",
     "domain": "Claude Code configuration and workflows",
     "topic": "Refine with concrete examples (test cases)",
@@ -698,6 +739,7 @@
   },
   {
     "id": 42,
+    "test": 2,
     "scenario": "Code generation with Claude Code",
     "domain": "Claude Code configuration and workflows",
     "topic": "Plan mode vs direct execution",
@@ -715,6 +757,7 @@
   },
   {
     "id": 43,
+    "test": 1,
     "scenario": "Code generation with Claude Code",
     "domain": "Claude Code configuration and workflows",
     "topic": "Test-driven iteration",
@@ -732,6 +775,7 @@
   },
   {
     "id": 44,
+    "test": 2,
     "scenario": "Code generation with Claude Code",
     "domain": "Claude Code configuration and workflows",
     "topic": "@ references vs CLAUDE.md",
@@ -749,6 +793,7 @@
   },
   {
     "id": 45,
+    "test": 1,
     "scenario": "Code generation with Claude Code",
     "domain": "Claude Code configuration and workflows",
     "topic": "Fix in dependency order",
@@ -766,6 +811,7 @@
   },
   {
     "id": 46,
+    "test": 2,
     "scenario": "Code generation with Claude Code",
     "domain": "Claude Code configuration and workflows",
     "topic": "Have Claude interview you first",
@@ -783,6 +829,7 @@
   },
   {
     "id": 47,
+    "test": 1,
     "scenario": "Code generation with Claude Code",
     "domain": "Tool design and MCP integration",
     "topic": "MCP server scope (.mcp.json)",
@@ -800,6 +847,7 @@
   },
   {
     "id": 48,
+    "test": 2,
     "scenario": "Code generation with Claude Code",
     "domain": "Claude Code configuration and workflows",
     "topic": "Path-specific rules (.claude/rules)",
@@ -817,6 +865,7 @@
   },
   {
     "id": 49,
+    "test": 1,
     "scenario": "Code generation with Claude Code",
     "domain": "Claude Code configuration and workflows",
     "topic": "Plan mode for architecture decisions",
@@ -834,6 +883,7 @@
   },
   {
     "id": 50,
+    "test": 2,
     "scenario": "Code generation with Claude Code",
     "domain": "Claude Code configuration and workflows",
     "topic": "Plan mode for large migrations",
@@ -851,6 +901,7 @@
   },
   {
     "id": 51,
+    "test": 1,
     "scenario": "Code generation with Claude Code",
     "domain": "Claude Code configuration and workflows",
     "topic": "Diagnosing with /memory",
@@ -868,6 +919,7 @@
   },
   {
     "id": 52,
+    "test": 2,
     "scenario": "Code generation with Claude Code",
     "domain": "Claude Code configuration and workflows",
     "topic": "Localized bug: direct execution",
@@ -885,6 +937,7 @@
   },
   {
     "id": 53,
+    "test": 1,
     "scenario": "Code generation with Claude Code",
     "domain": "Claude Code configuration and workflows",
     "topic": "@imports vs path-specific rules",
@@ -902,6 +955,7 @@
   },
   {
     "id": 54,
+    "test": 2,
     "scenario": "Code generation with Claude Code",
     "domain": "Claude Code configuration and workflows",
     "topic": "Slash commands vs CLAUDE.md",
@@ -919,6 +973,7 @@
   },
   {
     "id": 55,
+    "test": 2,
     "scenario": "Code generation with Claude Code",
     "domain": "Tool design and MCP integration",
     "topic": "MCP prompts in Claude Code",
@@ -936,6 +991,7 @@
   },
   {
     "id": 56,
+    "test": 1,
     "scenario": "Code generation with Claude Code",
     "domain": "Claude Code configuration and workflows",
     "topic": "Project skills (.claude/skills)",
@@ -953,6 +1009,7 @@
   },
   {
     "id": 57,
+    "test": 1,
     "scenario": "Code generation with Claude Code",
     "domain": "Claude Code configuration and workflows",
     "topic": "Permissions, hooks and CLAUDE.md",
@@ -970,6 +1027,7 @@
   },
   {
     "id": 58,
+    "test": 2,
     "scenario": "Code generation with Claude Code",
     "domain": "Claude Code configuration and workflows",
     "topic": "Hooks for mandatory formatting",
@@ -987,6 +1045,7 @@
   },
   {
     "id": 59,
+    "test": 1,
     "scenario": "Code generation with Claude Code",
     "domain": "Tool design and MCP integration",
     "topic": "Grep vs Glob vs Read",
@@ -1004,6 +1063,7 @@
   },
   {
     "id": 60,
+    "test": 2,
     "scenario": "Code generation with Claude Code",
     "domain": "Agentic architecture and orchestration",
     "topic": "Prompt chaining vs orchestrator-workers",
@@ -1021,6 +1081,7 @@
   },
   {
     "id": 61,
+    "test": 1,
     "scenario": "Developer productivity",
     "domain": "Agentic architecture and orchestration",
     "topic": "Resuming sessions (--continue / --resume)",
@@ -1038,6 +1099,7 @@
   },
   {
     "id": 62,
+    "test": 2,
     "scenario": "Developer productivity",
     "domain": "Agentic architecture and orchestration",
     "topic": "Adaptive decomposition",
@@ -1055,6 +1117,7 @@
   },
   {
     "id": 63,
+    "test": 2,
     "scenario": "Developer productivity",
     "domain": "Tool design and MCP integration",
     "topic": "Finding aliases and re-exports",
@@ -1072,6 +1135,7 @@
   },
   {
     "id": 64,
+    "test": 1,
     "scenario": "Developer productivity",
     "domain": "Tool design and MCP integration",
     "topic": "Using existing MCP servers",
@@ -1089,6 +1153,7 @@
   },
   {
     "id": 65,
+    "test": 1,
     "scenario": "Developer productivity",
     "domain": "Context management and reliability",
     "topic": "Exploring along the architecture",
@@ -1106,6 +1171,7 @@
   },
   {
     "id": 66,
+    "test": 2,
     "scenario": "Developer productivity",
     "domain": "Tool design and MCP integration",
     "topic": "MCP tool descriptions",
@@ -1123,6 +1189,7 @@
   },
   {
     "id": 67,
+    "test": 1,
     "scenario": "Developer productivity",
     "domain": "Tool design and MCP integration",
     "topic": "Grep for content search",
@@ -1140,6 +1207,7 @@
   },
   {
     "id": 68,
+    "test": 2,
     "scenario": "Developer productivity",
     "domain": "Tool design and MCP integration",
     "topic": "Edit without a unique anchor: Read + Write",
@@ -1157,6 +1225,7 @@
   },
   {
     "id": 69,
+    "test": 1,
     "scenario": "Developer productivity",
     "domain": "Tool design and MCP integration",
     "topic": "Several MCP servers at once",
@@ -1174,6 +1243,7 @@
   },
   {
     "id": 70,
+    "test": 2,
     "scenario": "Developer productivity",
     "domain": "Context management and reliability",
     "topic": "Subagents to avoid flooding context",
@@ -1191,6 +1261,7 @@
   },
   {
     "id": 71,
+    "test": 1,
     "scenario": "Developer productivity",
     "domain": "Agentic architecture and orchestration",
     "topic": "Resuming a session with changed files",
@@ -1208,6 +1279,7 @@
   },
   {
     "id": 72,
+    "test": 2,
     "scenario": "Developer productivity",
     "domain": "Tool design and MCP integration",
     "topic": "Searching for a literal error message",
@@ -1225,6 +1297,7 @@
   },
   {
     "id": 73,
+    "test": 1,
     "scenario": "Developer productivity",
     "domain": "Context management and reliability",
     "topic": "Persistent scratchpad in long sessions",
@@ -1242,6 +1315,7 @@
   },
   {
     "id": 74,
+    "test": 2,
     "scenario": "Developer productivity",
     "domain": "Tool design and MCP integration",
     "topic": "Descriptions that drive adoption of specialized tools",
@@ -1259,6 +1333,7 @@
   },
   {
     "id": 75,
+    "test": 2,
     "scenario": "Developer productivity",
     "domain": "Agentic architecture and orchestration",
     "topic": "Resuming an interrupted subagent",
@@ -1276,6 +1351,7 @@
   },
   {
     "id": 76,
+    "test": 1,
     "scenario": "Developer productivity",
     "domain": "Context management and reliability",
     "topic": "Fresh context with a distilled summary",
@@ -1293,6 +1369,7 @@
   },
   {
     "id": 77,
+    "test": 1,
     "scenario": "Developer productivity",
     "domain": "Context management and reliability",
     "topic": "Incremental exploration from entry points",
@@ -1310,6 +1387,7 @@
   },
   {
     "id": 78,
+    "test": 2,
     "scenario": "Developer productivity",
     "domain": "Agentic architecture and orchestration",
     "topic": "fork_session for alternatives",
@@ -1327,6 +1405,7 @@
   },
   {
     "id": 79,
+    "test": 1,
     "scenario": "Developer productivity",
     "domain": "Agentic architecture and orchestration",
     "topic": "Fork to compare strategies",
@@ -1344,6 +1423,7 @@
   },
   {
     "id": 80,
+    "test": 2,
     "scenario": "Developer productivity",
     "domain": "Agentic architecture and orchestration",
     "topic": "Adaptive decomposition in debugging",
@@ -1361,6 +1441,7 @@
   },
   {
     "id": 81,
+    "test": 1,
     "scenario": "Developer productivity",
     "domain": "Tool design and MCP integration",
     "topic": "MCP resources",
@@ -1378,6 +1459,7 @@
   },
   {
     "id": 82,
+    "test": 2,
     "scenario": "Developer productivity",
     "domain": "Agentic architecture and orchestration",
     "topic": "Multi-phase workflows vs mechanical tasks",
@@ -1395,6 +1477,7 @@
   },
   {
     "id": 83,
+    "test": 2,
     "scenario": "Claude Code in CI/CD",
     "domain": "Prompt engineering and structured output",
     "topic": "Few-shot to reduce false positives",
@@ -1412,6 +1495,7 @@
   },
   {
     "id": 84,
+    "test": 1,
     "scenario": "Claude Code in CI/CD",
     "domain": "Prompt engineering and structured output",
     "topic": "Message Batches API in CI",
@@ -1429,6 +1513,7 @@
   },
   {
     "id": 85,
+    "test": 2,
     "scenario": "Claude Code in CI/CD",
     "domain": "Prompt engineering and structured output",
     "topic": "Metadata for analyzing feedback",
@@ -1446,6 +1531,7 @@
   },
   {
     "id": 86,
+    "test": 1,
     "scenario": "Claude Code in CI/CD",
     "domain": "Claude Code configuration and workflows",
     "topic": "CLAUDE.md with testing criteria",
@@ -1463,6 +1549,7 @@
   },
   {
     "id": 87,
+    "test": 1,
     "scenario": "Claude Code in CI/CD",
     "domain": "Prompt engineering and structured output",
     "topic": "Explicit criteria for what to report",
@@ -1480,6 +1567,7 @@
   },
   {
     "id": 88,
+    "test": 2,
     "scenario": "Claude Code in CI/CD",
     "domain": "Prompt engineering and structured output",
     "topic": "Few-shot for subtle patterns",
@@ -1497,6 +1585,7 @@
   },
   {
     "id": 89,
+    "test": 1,
     "scenario": "Claude Code in CI/CD",
     "domain": "Prompt engineering and structured output",
     "topic": "Independent review in a fresh context",
@@ -1514,6 +1603,7 @@
   },
   {
     "id": 90,
+    "test": 2,
     "scenario": "Claude Code in CI/CD",
     "domain": "Prompt engineering and structured output",
     "topic": "Separate prompts per area",
@@ -1531,6 +1621,7 @@
   },
   {
     "id": 91,
+    "test": 1,
     "scenario": "Claude Code in CI/CD",
     "domain": "Prompt engineering and structured output",
     "topic": "Batches for release notes",
@@ -1548,6 +1639,7 @@
   },
   {
     "id": 92,
+    "test": 2,
     "scenario": "Claude Code in CI/CD",
     "domain": "Prompt engineering and structured output",
     "topic": "Don't hide uncertain findings",
@@ -1565,6 +1657,7 @@
   },
   {
     "id": 93,
+    "test": 2,
     "scenario": "Claude Code in CI/CD",
     "domain": "Claude Code configuration and workflows",
     "topic": "Team conventions in CLAUDE.md",
@@ -1582,6 +1675,7 @@
   },
   {
     "id": 94,
+    "test": 1,
     "scenario": "Claude Code in CI/CD",
     "domain": "Claude Code configuration and workflows",
     "topic": "Headless limits (--max-turns)",
@@ -1599,6 +1693,7 @@
   },
   {
     "id": 95,
+    "test": 2,
     "scenario": "Claude Code in CI/CD",
     "domain": "Claude Code configuration and workflows",
     "topic": "--system-prompt vs --append-system-prompt",
@@ -1618,6 +1713,7 @@
   },
   {
     "id": 96,
+    "test": 1,
     "scenario": "Claude Code in CI/CD",
     "domain": "Prompt engineering and structured output",
     "topic": "Prompt caching with batches (TTL)",
@@ -1635,6 +1731,7 @@
   },
   {
     "id": 97,
+    "test": 1,
     "scenario": "Claude Code in CI/CD",
     "domain": "Claude Code configuration and workflows",
     "topic": "--bare mode in CI",
@@ -1652,6 +1749,7 @@
   },
   {
     "id": 98,
+    "test": 2,
     "scenario": "Claude Code in CI/CD",
     "domain": "Prompt engineering and structured output",
     "topic": "Truncated output: split the work",
@@ -1669,6 +1767,7 @@
   },
   {
     "id": 99,
+    "test": 1,
     "scenario": "Claude Code in CI/CD",
     "domain": "Agentic architecture and orchestration",
     "topic": "Agentic review vs static prompt",
@@ -1686,6 +1785,7 @@
   },
   {
     "id": 100,
+    "test": 2,
     "scenario": "Claude Code in CI/CD",
     "domain": "Prompt engineering and structured output",
     "topic": "Separate detection from filtering",
@@ -1703,6 +1803,7 @@
   },
   {
     "id": 101,
+    "test": 2,
     "scenario": "Claude Code in CI/CD",
     "domain": "Claude Code configuration and workflows",
     "topic": "Reducing noise with CLAUDE.md",
@@ -1720,6 +1821,7 @@
   },
   {
     "id": 102,
+    "test": 1,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Schema via tool_use",
@@ -1737,6 +1839,7 @@
   },
   {
     "id": 103,
+    "test": 2,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Structured output with tool use",
@@ -1754,6 +1857,7 @@
   },
   {
     "id": 104,
+    "test": 1,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Invalid JSON: switch to tool use",
@@ -1771,6 +1875,7 @@
   },
   {
     "id": 105,
+    "test": 2,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Batches vs real-time API",
@@ -1788,6 +1893,7 @@
   },
   {
     "id": 106,
+    "test": 2,
     "scenario": "Structured data extraction",
     "domain": "Context management and reliability",
     "topic": "Human review with calibrated confidence",
@@ -1805,6 +1911,7 @@
   },
   {
     "id": 107,
+    "test": 1,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Schemas that allow \"not stated\" and ambiguous",
@@ -1822,6 +1929,7 @@
   },
   {
     "id": 108,
+    "test": 1,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Iterate on a sample, then batch",
@@ -1839,6 +1947,7 @@
   },
   {
     "id": 109,
+    "test": 2,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Few-shot for value consistency",
@@ -1856,6 +1965,7 @@
   },
   {
     "id": 110,
+    "test": 1,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Enum with an \"other\" option",
@@ -1873,6 +1983,7 @@
   },
   {
     "id": 111,
+    "test": 2,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Required fields that induce fabrication",
@@ -1890,6 +2001,7 @@
   },
   {
     "id": 112,
+    "test": 1,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Explicit instruction to use null",
@@ -1907,6 +2019,7 @@
   },
   {
     "id": 113,
+    "test": 2,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "tool_choice: auto, any and tool",
@@ -1924,6 +2037,7 @@
   },
   {
     "id": 114,
+    "test": 1,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Normalization by the model vs in code",
@@ -1941,6 +2055,7 @@
   },
   {
     "id": 115,
+    "test": 2,
     "scenario": "Structured data extraction",
     "domain": "Context management and reliability",
     "topic": "Risk-based human review routing",
@@ -1958,6 +2073,7 @@
   },
   {
     "id": 116,
+    "test": 2,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Few-shot for different layouts",
@@ -1975,6 +2091,7 @@
   },
   {
     "id": 117,
+    "test": 1,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Forcing the first tool with tool_choice",
@@ -1992,6 +2109,7 @@
   },
   {
     "id": 118,
+    "test": 2,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Schema with multiple values (amendments)",
@@ -2009,6 +2127,7 @@
   },
   {
     "id": 119,
+    "test": 1,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Resubmitting failures by custom_id",
@@ -2026,6 +2145,7 @@
   },
   {
     "id": 120,
+    "test": 1,
     "scenario": "Structured data extraction",
     "domain": "Context management and reliability",
     "topic": "Per-segment accuracy before automating",
@@ -2043,6 +2163,7 @@
   },
   {
     "id": 121,
+    "test": 2,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Validation and retry loop",
@@ -2060,6 +2181,7 @@
   },
   {
     "id": 122,
+    "test": 1,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Surfacing discrepancies (stated vs calculated)",
@@ -2077,6 +2199,7 @@
   },
   {
     "id": 123,
+    "test": 2,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Human corrections turned into few-shot",
@@ -2094,6 +2217,7 @@
   },
   {
     "id": 124,
+    "test": 1,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Total latency with batches",
@@ -2111,6 +2235,7 @@
   },
   {
     "id": 125,
+    "test": 2,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Retrying with the validation error",
@@ -2128,6 +2253,7 @@
   },
   {
     "id": 126,
+    "test": 1,
     "scenario": "Structured data extraction",
     "domain": "Context management and reliability",
     "topic": "Context window budget",
@@ -2145,6 +2271,7 @@
   },
   {
     "id": 127,
+    "test": 2,
     "scenario": "Structured data extraction",
     "domain": "Context management and reliability",
     "topic": "Chunking long documents",
@@ -2162,6 +2289,7 @@
   },
   {
     "id": 128,
+    "test": 1,
     "scenario": "Structured data extraction",
     "domain": "Context management and reliability",
     "topic": "Stratified random sampling",
@@ -2179,6 +2307,7 @@
   },
   {
     "id": 129,
+    "test": 2,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Limits of retry with feedback",
@@ -2196,6 +2325,7 @@
   },
   {
     "id": 130,
+    "test": 1,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Source precedence rule",
@@ -2213,6 +2343,7 @@
   },
   {
     "id": 131,
+    "test": 2,
     "scenario": "Structured data extraction",
     "domain": "Prompt engineering and structured output",
     "topic": "Few-shot for granularity",

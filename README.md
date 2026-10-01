@@ -16,10 +16,21 @@ pip install -r requirements.txt
 streamlit run exam_web.py
 ```
 
+## Tests
+
+- **Test 1** (65 questions) and **Test 2** (66 questions): fixed tests with no overlap.
+  Each covers all 6 exam scenarios with balanced domains, and questions are grouped by
+  scenario like the real exam. Picking the same test always gives the same questions in
+  the same order.
+- **Practice (all questions)**: all 131 questions, with the sidebar's limit, shuffle and
+  syllabus filters.
+
+The split is stored in the `test` field (1 or 2) of each question in `questions.json`.
+
 ## `questions.json` format
 
 A list of objects with `id`, `question`, `options`, `answer_index` (list of correct indices),
-`explanation`, and the syllabus tags `scenario`, `domain` and `topic`.
+`explanation`, `test` (1 or 2), and the syllabus tags `scenario`, `domain` and `topic`.
 Optional: `code` (a block shown below the question) and `code_language`
 (syntax highlighting for that block, e.g. `bash`, `json`, `yaml`).
 

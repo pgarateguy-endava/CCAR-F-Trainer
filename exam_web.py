@@ -127,7 +127,8 @@ defaults = {
     "started": False, "index": 0, "score": 0, 
     "answers": [], "order": [], "t0": None, 
     "current_q_answered": False,
-    "user_selection": None
+    "user_selection": None,
+    "test_name": None,
 }
 for k, v in defaults.items():
     ss.setdefault(k, v)
@@ -145,6 +146,7 @@ def resolve_json_path(candidate: str) -> str:
 
 
 st.sidebar.header("⚙️ Settings")
+st.sidebar.caption("Limit, shuffle and syllabus filters apply only to **Practice** mode. Test 1 and Test 2 are always the same questions in the same order.")
 json_path = st.sidebar.text_input("JSON path", DEFAULT_JSON_FILE)
 limit = st.sidebar.number_input("Question limit (0 = all)", min_value=0, value=0, step=1)
 shuffle_qs = st.sidebar.checkbox("🔀 Shuffle questions", value=False)
@@ -165,7 +167,16 @@ if st.sidebar.button("🔄 Restart quiz", type="primary"):
     st.rerun()
 
 # --- 4. Quiz logic ---
-def start_quiz():
+# Fixed tests: the "test" field in questions.json says which test each question belongs to.
+# Each test covers all 6 scenarios with balanced domains, grouped by scenario like the real exam.
+EXAMS = {
+    "Test 1": 1,
+    "Test 2": 2,
+    "Practice (all questions)": None,
+}
+
+
+def start_quiz(exam: str):
     resolved_path = resolve_json_path(json_path)
     qs = load_questions(resolved_path)
     if qs is None:
@@ -175,6 +186,34 @@ def start_quiz():
     # Copy so the cached data isn't mutated
     qs = [dict(q, _src=i) for i, q in enumerate(qs)]  # _src: original position, used to save progress
 
+    test_id = EXAMS.get(exam)
+    if test_id is not None:
+        # Fixed test: always the same questions, in file order (grouped by scenario).
+        qs = [q for q in qs if q.get("test") == test_id]
+        if not qs:
+            st.warning(f"No questions are assigned to {exam} in the JSON file.")
+            return
+    else:
+        qs = practice_filters(qs)
+
+    if not qs:
+        st.warning("No questions match the current settings.")
+        return
+
+    ss.test_name = exam
+    ss.order = qs
+    ss.started = True
+    ss.index = 0
+    ss.score = 0
+    ss.answers = []
+    ss.t0 = time.time()
+    ss.current_q_answered = False
+    ss.user_selection = None
+    st.rerun()
+
+
+def practice_filters(qs):
+    """Practice mode: syllabus filters, shuffle and limit from the sidebar."""
     # Syllabus filters (empty = all)
     if sel_scenarios:
         qs = [q for q in qs if q.get("scenario") in sel_scenarios]
@@ -186,20 +225,7 @@ def start_quiz():
         
     if limit and limit > 0:
         qs = qs[:limit]
-
-    if not qs:
-        st.warning("No questions match the current settings.")
-        return
-
-    ss.order = qs
-    ss.started = True
-    ss.index = 0
-    ss.score = 0
-    ss.answers = []
-    ss.t0 = time.time()
-    ss.current_q_answered = False
-    ss.user_selection = None
-    st.rerun()
+    return qs
 
 def escape_markdown(text: str) -> str:
     # Escape '_' outside `code` so it isn't rendered as italics
@@ -261,7 +287,7 @@ def render_results():
     pct = (ss.score/total)*100 if total else 0
 
     st.balloons()
-    st.title("📊 Final results")
+    st.title(f"📊 Final results{' · ' + ss.test_name if ss.test_name else ''}")
     
     c1, c2, c3 = st.columns(3)
     c1.metric("Score", f"{ss.score}/{total}")
@@ -350,6 +376,7 @@ def restore_from_url(qp=None):
         st.query_params.clear()  # old or incompatible URL: start over
         return False
 
+    ss.test_name = qp.get("x") or None
     ss.order = order
     ss.started = True
     ss.index = index
@@ -380,6 +407,7 @@ def sync_url():
             "i": str(ss.index),
             "a": encode_answers(),
             "t": str(int(ss.t0 or time.time())),
+            "x": ss.test_name or "",
         }
         if st.query_params.to_dict() != params:
             st.query_params.from_dict(params)
@@ -413,7 +441,7 @@ def render_resume_prompt():
         return
 
     with st.container(border=True):
-        st.markdown(f"**💾 You have saved progress**  \nQuestion {current} of {total} · {answered} answered")
+        st.markdown(f"**💾 You have saved progress{' · ' + saved['x'] if saved.get('x') else ''}**  \nQuestion {current} of {total} · {answered} answered")
         c1, c2 = st.columns(2)
         with c1:
             if st.button("▶️ Resume", type="primary", use_container_width=True):
@@ -434,9 +462,20 @@ st.caption("Practice mock exam for the Anthropic Claude certification. One quest
 
 if not ss.started:
     render_resume_prompt()
-    st.info(f"Load your question file and press Start. Current file: `{resolve_json_path(json_path)}`")
+    counts = {name: sum(1 for q in _all_qs if q.get("test") == tid) for name, tid in EXAMS.items()}
+    counts["Practice (all questions)"] = len(_all_qs)
+    exam = st.radio(
+        "Choose a test",
+        list(EXAMS),
+        format_func=lambda name: f"{name} · {counts[name]} questions",
+        key="exam_choice",
+    )
+    if EXAMS[exam] is None:
+        st.caption("All questions, using the sidebar settings (limit, shuffle, filters).")
+    else:
+        st.caption("Same questions in the same order every time, grouped by scenario like the real exam.")
     if st.button("▶️ START", type="primary"):
-        start_quiz()
+        start_quiz(exam)
 
 else:
     # Quiz in progress
@@ -449,7 +488,7 @@ else:
         
         # Progress bar
         st.progress((ss.index) / total)
-        st.caption(f"Question {ss.index + 1} of {total}")
+        st.caption(f"{ss.test_name + ' · ' if ss.test_name else ''}Question {ss.index + 1} of {total}")
         
         # Question syllabus tags
         tags = [(cls, q.get(cls)) for cls in ("scenario", "domain", "topic") if q.get(cls)]
