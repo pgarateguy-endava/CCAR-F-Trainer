@@ -1,3 +1,4 @@
+import html
 import json
 import time
 import random
@@ -6,15 +7,15 @@ import streamlit as st
 import streamlit.components.v1 as components
 from streamlit_js_eval import streamlit_js_eval
 
-# Configuración de página
+# Page config
 st.set_page_config(page_title="Claude Certification Mock", page_icon="🧠", layout="centered")
 
 st.markdown(
     """
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        /* El color de fondo y de texto lo define el tema (.streamlit/config.toml).
-           No forzar background acá: en iOS con modo oscuro dejaba texto blanco sobre fondo claro. */
+        /* Background and text colors come from the theme (.streamlit/config.toml).
+           Don't force a background here: on iOS dark mode it left white text on a light background. */
         html, body, [class*="stApp"] {
             font-family: 'Inter', sans-serif;
         }
@@ -55,10 +56,26 @@ st.markdown(
         .stRadio > div {
             gap: 0.5rem;
         }
+        .q-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            margin: 0.25rem 0 0.5rem;
+        }
+        .q-tag {
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 0.15rem 0.6rem;
+            border-radius: 999px;
+            line-height: 1.5;
+        }
+        .q-tag.scenario { background: #e6ecff; color: #2b3f99; }
+        .q-tag.domain { background: #efe6ff; color: #5a2d9c; }
+        .q-tag.topic { background: #e9f5ee; color: #1f6b3d; }
         .stCheckbox {
             padding: 0.15rem 0;
         }
-        /* Ajustes para celular */
+        /* Mobile tweaks */
         @media (max-width: 640px) {
             .block-container {
                 padding-top: 1rem;
@@ -80,31 +97,31 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 1. Carga de Datos con Caché ---
+# --- 1. Cached data loading ---
 @st.cache_data
 def load_questions(path_str: str):
     path = Path(path_str)
     if not path.exists():
-        return None  # Manejo suave del error
+        return None  # Fail soft
 
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
         
     if not isinstance(data, list):
-        raise ValueError("El JSON debe contener una lista de preguntas.")
+        raise ValueError("The JSON file must contain a list of questions.")
         
-    # Validación y Normalización
+    # Validation and normalization
     for q in data:
         if not all(k in q for k in ("question", "options", "answer_index")):
-            continue # O lanzar error, aquí saltamos preguntas rotas
+            continue  # Skip malformed questions
             
-        # Normalizar answer_index a lista siempre
+        # Always normalize answer_index to a list
         if isinstance(q["answer_index"], int):
             q["answer_index"] = [q["answer_index"]]
             
     return data
 
-# --- 2. Gestión del Estado ---
+# --- 2. State management ---
 ss = st.session_state
 defaults = {
     "started": False, "index": 0, "score": 0, 
@@ -127,28 +144,42 @@ def resolve_json_path(candidate: str) -> str:
     return candidate or DEFAULT_JSON_FILE
 
 
-st.sidebar.header("⚙️ Configuración")
-json_path = st.sidebar.text_input("Ruta del JSON", DEFAULT_JSON_FILE)
-limit = st.sidebar.number_input("Límite de preguntas (0 = todas)", min_value=0, value=0, step=1)
-shuffle_qs = st.sidebar.checkbox("🔀 Orden Aleatorio", value=False)
-immediate_feedback = st.sidebar.checkbox("👀 Feedback Inmediato", value=True, help="Muestra la respuesta correcta justo después de contestar.")
+st.sidebar.header("⚙️ Settings")
+json_path = st.sidebar.text_input("JSON path", DEFAULT_JSON_FILE)
+limit = st.sidebar.number_input("Question limit (0 = all)", min_value=0, value=0, step=1)
+shuffle_qs = st.sidebar.checkbox("🔀 Shuffle questions", value=False)
+immediate_feedback = st.sidebar.checkbox("👀 Instant feedback", value=True, help="Show the correct answer right after you answer.")
 
-if st.sidebar.button("🔄 Reiniciar Quiz", type="primary"):
+# Syllabus filters (exam scenario and domain)
+_all_qs = load_questions(resolve_json_path(json_path)) or []
+SCENARIOS = list(dict.fromkeys(q["scenario"] for q in _all_qs if q.get("scenario")))
+DOMAINS = sorted({q["domain"] for q in _all_qs if q.get("domain")})
+st.sidebar.subheader("📚 Syllabus")
+sel_scenarios = st.sidebar.multiselect("Scenarios", SCENARIOS, placeholder="All")
+sel_domains = st.sidebar.multiselect("Domains", DOMAINS, placeholder="All")
+
+if st.sidebar.button("🔄 Restart quiz", type="primary"):
     for k in defaults.keys():
         del ss[k]
     ss["_clear_ls"] = ss["_resume_dismissed"] = True
     st.rerun()
 
-# --- 4. Funciones Lógicas ---
+# --- 4. Quiz logic ---
 def start_quiz():
     resolved_path = resolve_json_path(json_path)
     qs = load_questions(resolved_path)
     if qs is None:
-        st.error(f"No se encontró el archivo: {resolved_path}")
+        st.error(f"File not found: {resolved_path}")
         return
 
-    # Copia para no mutar el caché
-    qs = [dict(q, _src=i) for i, q in enumerate(qs)]  # _src: posición original, para guardar el progreso en la URL 
+    # Copy so the cached data isn't mutated
+    qs = [dict(q, _src=i) for i, q in enumerate(qs)]  # _src: original position, used to save progress
+
+    # Syllabus filters (empty = all)
+    if sel_scenarios:
+        qs = [q for q in qs if q.get("scenario") in sel_scenarios]
+    if sel_domains:
+        qs = [q for q in qs if q.get("domain") in sel_domains]
     
     if shuffle_qs:
         random.shuffle(qs)
@@ -157,7 +188,7 @@ def start_quiz():
         qs = qs[:limit]
 
     if not qs:
-        st.warning("No hay preguntas válidas cargadas.")
+        st.warning("No questions match the current settings.")
         return
 
     ss.order = qs
@@ -171,12 +202,12 @@ def start_quiz():
     st.rerun()
 
 def escape_markdown(text: str) -> str:
-    # Escapa '_' fuera de `código` para que no se interprete como cursiva
+    # Escape '_' outside `code` so it isn't rendered as italics
     parts = text.split("`")
     return "`".join(p if i % 2 else p.replace("_", r"\_") for i, p in enumerate(parts))
 
 def submit_answer(q, choices):
-    # Calcular corrección
+    # Grade the answer
     correct_indices = set(q["answer_index"])
     user_indices = set(choices) if choices is not None else set()
     is_correct = (correct_indices == user_indices) and (choices is not None)
@@ -184,7 +215,7 @@ def submit_answer(q, choices):
     if ss.index < len(ss.answers):
         prev = ss.answers[ss.index]
         if prev["correct"]:
-            ss.score -= 1  # quitamos el punto anterior
+            ss.score -= 1  # remove the previous point
 
     answer_record = {
         "question": q["question"],
@@ -204,7 +235,7 @@ def submit_answer(q, choices):
         ss.score += 1
         
     ss.current_q_answered = True
-    ss.user_selection = choices  # Guardar para mostrar en UI
+    ss.user_selection = choices  # Keep it to show in the UI
 
 def next_question():
     ss.index += 1
@@ -215,57 +246,72 @@ def next_question():
 def prev_question():
     if ss.index > 0:
         ss.index -= 1
-        ss.current_q_answered = False  # volvemos a modo edición
-        # recuperar selección previa si existe
+        ss.current_q_answered = False  # back to edit mode
+        # restore the previous selection, if any
         if ss.index < len(ss.answers):
             ss.user_selection = ss.answers[ss.index]["chosen"]
         else:
             ss.user_selection = None
         st.rerun()
 
-# --- 5. Renderizado de Resultados ---
+# --- 5. Results ---
 def render_results():
     elapsed = time.time() - ss.t0 if ss.t0 else 0.0
     total = len(ss.order)
     pct = (ss.score/total)*100 if total else 0
 
     st.balloons()
-    st.title("📊 Resultados Finales")
+    st.title("📊 Final results")
     
     c1, c2, c3 = st.columns(3)
-    c1.metric("Puntuación", f"{ss.score}/{total}")
-    c2.metric("Porcentaje", f"{pct:.1f}%")
-    c3.metric("Tiempo", f"{elapsed:.1f} s")
+    c1.metric("Score", f"{ss.score}/{total}")
+    c2.metric("Percentage", f"{pct:.1f}%")
+    c3.metric("Time", f"{elapsed:.1f} s")
 
-    with st.expander("🔍 Revisión Detallada", expanded=True):
+    # Score by syllabus domain, to see what to review
+    by_domain = {}
+    for i, ans in enumerate(ss.answers):
+        dom = ss.order[i].get("domain", "No domain")
+        ok, n = by_domain.get(dom, (0, 0))
+        by_domain[dom] = (ok + ans["correct"], n + 1)
+    if by_domain:
+        st.subheader("📚 By domain")
+        for dom, (ok, n) in sorted(by_domain.items(), key=lambda kv: kv[1][0] / kv[1][1]):
+            st.markdown(f"**{dom}** · {ok}/{n} ({ok / n:.0%})")
+            st.progress(ok / n)
+
+    with st.expander("🔍 Detailed review", expanded=True):
         for i, ans in enumerate(ss.answers):
             color = "green" if ans["correct"] else "red"
             icon = "✅" if ans["correct"] else "❌"
             if ans["chosen"] is None:
-                icon = "⏭️ (Saltada)"
+                icon = "⏭️ (Skipped)"
                 color = "gray"
                 
             st.markdown(f":{color}[**{i+1}. {ans['question']}**]")
-            st.write(f"Estado: {icon}")
+            src = ss.order[i]
+            if src.get("topic"):
+                st.caption(f"📚 {src.get('domain', '')} · {src['topic']}")
+            st.write(f"Status: {icon}")
             
             correct_txt = [ans['options'][idx] for idx in ans['correct_index']]
-            st.caption(f"Respuesta correcta: **{', '.join(correct_txt)}**")
+            st.caption(f"Correct answer: **{', '.join(correct_txt)}**")
             
             if ans["explanation"]:
-                with st.expander("Explicación", expanded=True):
+                with st.expander("Explanation", expanded=True):
                     st.write(ans["explanation"])
             st.divider()
 
-    if st.button("Volver al Inicio"):
+    if st.button("Back to start"):
         for k in defaults.keys():
             del ss[k]
         ss["_clear_ls"] = ss["_resume_dismissed"] = True
         st.rerun()
 
-# --- 5b. Progreso guardado en la URL ---
-# st.session_state vive en el servidor y se pierde si Safari suspende la pestaña,
-# si se recarga la página o si la app se reinicia. Por eso guardamos el progreso
-# en la URL (?o=orden&i=índice&a=respuestas&t=inicio) y lo restauramos al volver.
+# --- 5b. Saved progress (URL + browser storage) ---
+# st.session_state lives on the server and is lost if Safari suspends the tab,
+# the page reloads or the app restarts. So progress is also saved in the URL
+# (?o=order&i=index&a=answers&t=start) and in localStorage, and restored on return.
 def encode_answers() -> str:
     return ".".join(
         "s" if ans["chosen"] is None else "+".join(map(str, ans["chosen"]))
@@ -274,7 +320,7 @@ def encode_answers() -> str:
 
 
 def restore_from_url(qp=None):
-    """Restaura el progreso desde la URL o desde un dict (el avance guardado en el navegador)."""
+    """Restore progress from the URL, or from a dict (the progress saved in the browser)."""
     qp = st.query_params if qp is None else qp
     if ss.started or "o" not in qp:
         return False
@@ -287,7 +333,7 @@ def restore_from_url(qp=None):
             q = order[pos]
             chosen = None if raw == "s" else [int(c) for c in raw.split("+")]
             if chosen is not None and any(c >= len(q["options"]) for c in chosen):
-                raise ValueError("opción fuera de rango")
+                raise ValueError("option out of range")
             correct = chosen is not None and set(chosen) == set(q["answer_index"])
             score += correct
             answers.append({
@@ -299,9 +345,9 @@ def restore_from_url(qp=None):
                 "explanation": q.get("explanation", ""),
             })
         if not order or not 0 <= index <= len(order) or len(answers) > len(order):
-            raise ValueError("progreso inválido")
+            raise ValueError("invalid progress")
     except (ValueError, IndexError, KeyError, TypeError):
-        st.query_params.clear()  # URL vieja o incompatible: empezamos de cero
+        st.query_params.clear()  # old or incompatible URL: start over
         return False
 
     ss.order = order
@@ -315,12 +361,16 @@ def restore_from_url(qp=None):
     return True
 
 
-LS_KEY = "ccarf_progress"  # clave del avance en localStorage
+LS_KEY = "ccarf_progress"  # localStorage key for saved progress
 
 
 def ls_write(js: str):
-    """Ejecuta JS en el navegador sin provocar un rerun (solo escritura)."""
-    components.html(f"<script>try {{ {js} }} catch (e) {{}}</script>", height=0)
+    """Run JS in the browser without triggering a rerun (write-only)."""
+    snippet = f"<script>try {{ {js} }} catch (e) {{}}</script>"
+    if hasattr(st, "iframe"):  # newer Streamlit: components.html is deprecated
+        st.iframe(snippet, height=1)
+    else:
+        components.html(snippet, height=0)
 
 
 def sync_url():
@@ -333,7 +383,7 @@ def sync_url():
         }
         if st.query_params.to_dict() != params:
             st.query_params.from_dict(params)
-        # Copia en la memoria del navegador, para reanudar aunque se pierda la URL
+        # Copy to browser storage, so progress can be resumed even without the URL
         ls_write(f"localStorage.setItem({json.dumps(LS_KEY)}, {json.dumps(json.dumps(params))});")
     else:
         if st.query_params:
@@ -343,10 +393,10 @@ def sync_url():
 
 
 def render_resume_prompt():
-    """Si hay un avance guardado en este navegador, ofrece reanudarlo."""
+    """If this browser has saved progress, offer to resume it."""
     if ss.get("_resume_dismissed"):
         return
-    # Devuelve None mientras el navegador todavía no respondió, "" si no hay nada guardado
+    # Returns None until the browser responds, "" if nothing is saved
     raw = streamlit_js_eval(
         js_expressions=f"localStorage.getItem({json.dumps(LS_KEY)}) || ''",
         key="ls_read",
@@ -363,33 +413,33 @@ def render_resume_prompt():
         return
 
     with st.container(border=True):
-        st.markdown(f"**💾 Tenés un avance guardado**  \nPregunta {current} de {total} · {answered} respondidas")
+        st.markdown(f"**💾 You have saved progress**  \nQuestion {current} of {total} · {answered} answered")
         c1, c2 = st.columns(2)
         with c1:
-            if st.button("▶️ Reanudar", type="primary", use_container_width=True):
+            if st.button("▶️ Resume", type="primary", use_container_width=True):
                 if restore_from_url(saved):
                     st.rerun()
-                st.warning("No se pudo recuperar el avance guardado.")
+                st.warning("Couldn't restore the saved progress.")
         with c2:
-            if st.button("🗑️ Empezar de nuevo", use_container_width=True):
+            if st.button("🗑️ Start over", use_container_width=True):
                 ss["_clear_ls"] = ss["_resume_dismissed"] = True
                 st.rerun()
 
 
 restore_from_url()
 
-# --- 6. Interfaz Principal ---
-st.title("Simulacro Certificación Claude 🧠")
-st.caption("Mock de práctica para la certificación de Anthropic. Avanzá una pregunta a la vez.")
+# --- 6. Main UI ---
+st.title("Claude Certification Mock Exam 🧠")
+st.caption("Practice mock exam for the Anthropic Claude certification. One question at a time.")
 
 if not ss.started:
     render_resume_prompt()
-    st.info(f"Carga tu archivo de preguntas y presiona comenzar. Ruta actual sugerida: `{resolve_json_path(json_path)}`")
-    if st.button("▶️ COMENZAR", type="primary"):
+    st.info(f"Load your question file and press Start. Current file: `{resolve_json_path(json_path)}`")
+    if st.button("▶️ START", type="primary"):
         start_quiz()
 
 else:
-    # Quiz en curso
+    # Quiz in progress
     total = len(ss.order)
     
     if ss.index >= total:
@@ -397,29 +447,39 @@ else:
     else:
         q = ss.order[ss.index]
         
-        # Barra de progreso
+        # Progress bar
         st.progress((ss.index) / total)
-        st.caption(f"Pregunta {ss.index + 1} de {total}")
+        st.caption(f"Question {ss.index + 1} of {total}")
         
-        # Mostrar pregunta
+        # Question syllabus tags
+        tags = [(cls, q.get(cls)) for cls in ("scenario", "domain", "topic") if q.get(cls)]
+        if tags:
+            st.markdown(
+                '<div class="q-tags">'
+                + "".join(f'<span class="q-tag {cls}">{html.escape(v)}</span>' for cls, v in tags)
+                + "</div>",
+                unsafe_allow_html=True,
+            )
+
+        # Show the question
         st.markdown(f"### {q['question']}")
-        if "code" in q:  # Soporte opcional para bloques de código
+        if "code" in q:  # Optional code block
             st.code(q["code"], language=q.get("code_language", "text"))
 
-        # Una opción se muestra como bloque de código solo si tiene varias líneas
-        # (ej. un comando o un fragmento de configuración).
+        # An option is shown as a code block only if it spans several lines
+        # (e.g. a command or a config snippet).
         def is_code_option(opt):
             return "\n" in opt.strip()
 
-        # Lógica de Selección
+        # Answer selection
         is_multi = len(q["answer_index"]) > 1
         user_choices = []
         
-        # Si ya se respondió (Feedback Mode), deshabilitar inputs
+        # Disable inputs once answered (feedback mode)
         disabled = ss.current_q_answered 
 
         if is_multi:
-            st.write(f"📝 *Selecciona {len(q['answer_index'])} opciones:*")
+            st.write(f"📝 *Select {len(q['answer_index'])} options:*")
             for idx, opt in enumerate(q["options"]):
                 checked = False
                 if ss.user_selection and idx in ss.user_selection:
@@ -453,13 +513,13 @@ else:
             has_code_options = any(is_code_option(opt) for opt in q["options"])
             
             if has_code_options:
-                st.write("Elige una opción:")
+                st.write("Choose an option:")
                 
                 selected_option = st.radio(
-                    "Selecciona el fragmento de código:",
+                    "Select the code snippet:",
                     range(len(q["options"])),
                     index=prev_idx,
-                    format_func=lambda x: f"Opción {x+1}",
+                    format_func=lambda x: f"Option {x+1}",
                     disabled=disabled,
                     key=f"radio_{ss.index}",
                     label_visibility="collapsed"
@@ -468,9 +528,9 @@ else:
                 for idx, opt in enumerate(q["options"]):
                     is_selected = (selected_option == idx)
                     if is_selected:
-                        st.markdown(f"**🔘 Opción {idx + 1}** ✓")
+                        st.markdown(f"**🔘 Option {idx + 1}** ✓")
                     else:
-                        st.markdown(f"**⚪ Opción {idx + 1}**")
+                        st.markdown(f"**⚪ Option {idx + 1}**")
                     
                     st.code(opt, language="text")
                     st.markdown("---")
@@ -479,7 +539,7 @@ else:
                     user_choices = [selected_option]
             else:
                 idx_selected = st.radio(
-                    "Elige una opción:", 
+                    "Choose an option:", 
                     range(len(q["options"])), 
                     format_func=lambda x: escape_markdown(q["options"][x]),
                     key=f"radio_{ss.index}",
@@ -491,16 +551,16 @@ else:
 
         st.divider()
 
-        # --- Botonera de Acción ---
+        # --- Action buttons ---
         cols = st.columns([1, 1, 2])
         
         if not ss.current_q_answered:
             with cols[0]:
-                if st.button("⬅️ Anterior", disabled=ss.index == 0):
+                if st.button("⬅️ Previous", disabled=ss.index == 0):
                     prev_question()
 
             with cols[1]:
-                if st.button("Saltar ⏭️"):
+                if st.button("Skip ⏭️"):
                     submit_answer(q, None)
                     if not immediate_feedback:
                         next_question()
@@ -509,7 +569,7 @@ else:
 
             with cols[2]:
                 can_submit = len(user_choices) > 0
-                if st.button("Confirmar ✅", type="primary", disabled=not can_submit):
+                if st.button("Submit ✅", type="primary", disabled=not can_submit):
                     submit_answer(q, user_choices)
                     if not immediate_feedback:
                         next_question()
@@ -517,26 +577,26 @@ else:
                         st.rerun()
         
         else:
-            # Mostrar Feedback Aquí Mismo
-            last_ans = ss.answers[ss.index]  # usamos el índice actual
+            # Show feedback inline
+            last_ans = ss.answers[ss.index]  # current index
             if last_ans["correct"]:
-                st.success("¡Correcto! 🎉")
+                st.success("Correct! 🎉")
             else:
-                st.error("Incorrecto ❌")
+                st.error("Incorrect ❌")
                 correct_txt = [q['options'][i] for i in q['answer_index']]
-                st.markdown(f"**La respuesta era:** {', '.join(correct_txt)}")
+                st.markdown(f"**Correct answer:** {', '.join(correct_txt)}")
             
             if q.get("explanation"):
-                with st.expander("Explicación", expanded=True):
+                with st.expander("Explanation", expanded=True):
                     st.write(q["explanation"])
 
             cols2 = st.columns([1, 1])
             with cols2[0]:
-                if st.button("⬅️ Anterior", disabled=ss.index == 0):
+                if st.button("⬅️ Previous", disabled=ss.index == 0):
                     prev_question()
             with cols2[1]:
-                if st.button("Siguiente Pregunta ➡️", type="primary"):
+                if st.button("Next question ➡️", type="primary"):
                     next_question()
 
-# Guardar el progreso en la URL al final de cada ejecución
+# Save progress at the end of every run
 sync_url()

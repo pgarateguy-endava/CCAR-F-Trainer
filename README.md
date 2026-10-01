@@ -1,36 +1,42 @@
 # CCAR-F-Trainer
 
-Simulacro (mock) de práctica para la certificación de Claude de Anthropic, hecho con Streamlit.
-Las preguntas están en `questions.json` (en inglés, con explicación de cada respuesta).
+Practice mock exam for the Anthropic Claude certification, built with Streamlit.
+Questions live in `questions.json`, each with an explanation of the correct answer.
 
-## Ejecutar localmente
+## Run locally
 
 ```bash
-uv run --with streamlit streamlit run exam_web.py
+uv run --with streamlit --with streamlit-js-eval streamlit run exam_web.py
 ```
 
-O con un entorno Python tradicional:
+Or with a regular Python environment:
 
 ```bash
 pip install -r requirements.txt
 streamlit run exam_web.py
 ```
 
-## Formato de `questions.json`
+## `questions.json` format
 
-Lista de objetos con `id`, `question`, `options`, `answer_index` (lista de índices correctos)
-y `explanation`. Opcionales: `code` (bloque a mostrar debajo de la pregunta) y
-`code_language` (resaltado del bloque, ej. `bash`, `json`, `yaml`).
+A list of objects with `id`, `question`, `options`, `answer_index` (list of correct indices),
+`explanation`, and the syllabus tags `scenario`, `domain` and `topic`.
+Optional: `code` (a block shown below the question) and `code_language`
+(syntax highlighting for that block, e.g. `bash`, `json`, `yaml`).
 
-## Tema
+## Saved progress
 
-`.streamlit/config.toml` fija el tema claro para que la app se lea igual en celulares
-con modo oscuro (Safari en iPhone mostraba el texto en blanco).
+Progress is saved in the URL and in the browser's `localStorage`. When you come back
+without the URL, the app offers **Resume** or **Start over**.
+
+## Theme
+
+`.streamlit/config.toml` forces the light theme so the app reads the same on phones in
+dark mode (Safari on iPhone was showing white text on a white background).
 
 ## Deploy
 
 Streamlit Community Cloud:
 
-- repositorio: `pgarateguy-endava/CCAR-F-Trainer`
-- rama: `main`
-- archivo principal: `exam_web.py`
+- repository: `pgarateguy-endava/CCAR-F-Trainer`
+- branch: `main`
+- main file: `exam_web.py`

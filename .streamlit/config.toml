@@ -1,5 +1,5 @@
-# Tema fijo en modo claro: evita que Safari/iOS en modo oscuro
-# pinte el texto en blanco sobre el fondo claro del CSS.
+# Force the light theme: otherwise Safari/iOS in dark mode
+# renders white text on the light CSS background.
 [theme]
 base = "light"
 primaryColor = "#6b5cf4"
